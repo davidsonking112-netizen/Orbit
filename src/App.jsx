@@ -4,17 +4,19 @@ import {
   Check, CheckSquare, ChevronDown, ChevronRight, CircleHelp, Clock3, CloudUpload,
   Command, File, FileSpreadsheet, FileText, Filter, Folder, Grid2X2, HardDrive,
   Link2, LockKeyhole, Mail, MoreHorizontal, Plus, Search, Send, Settings as SettingsIcon,
-  ShieldCheck, SlidersHorizontal, Sparkles, ToggleLeft, Upload, UserRound, X,
+  ShieldCheck, SlidersHorizontal, Sparkles, ToggleLeft, Upload, UserRound, X, Images,
 } from 'lucide-react';
 import TasksPage from './pages/TasksPage.jsx';
 import LibraryPage from './pages/LibraryPage.jsx';
 import IntegrationsPage from './pages/IntegrationsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
+import SlidesImagesPage from './pages/SlidesImagesPage.jsx';
 import TaskChatPage from './pages/TaskChatPage.jsx';
 
 const nav = [
   { id: 'tasks', label: 'Tasks', icon: CheckSquare, path: '/tasks' },
   { id: 'library', label: 'Library', icon: Archive, path: '/library' },
+  { id: 'slides-images', label: 'Slides & images', icon: Images, path: '/slides-images' },
   { id: 'integrations', label: 'Integrations', icon: Link2, path: '/integrations' },
   { id: 'settings', label: 'Settings', icon: SettingsIcon, path: '/settings' },
 ];
@@ -22,6 +24,7 @@ const nav = [
 function pageFromPath(path) {
   if (path.startsWith('/task/')) return 'task-chat';
   if (path === '/library') return 'library';
+  if (path === '/slides-images') return 'slides-images';
   if (path === '/integrations') return 'integrations';
   if (path === '/settings') return 'settings';
   return 'tasks';
@@ -45,7 +48,7 @@ export default function App() {
     setNotice(text);
     window.setTimeout(() => setNotice(''), 2600);
   };
-  const title = page === 'library' ? 'Library' : page === 'integrations' ? 'Integrations' : page === 'settings' ? 'Settings' : page === 'task-chat' ? 'Comparing project tools' : 'Orbit';
+  const title = page === 'library' ? 'Library' : page === 'slides-images' ? 'Slides & images' : page === 'integrations' ? 'Integrations' : page === 'settings' ? 'Settings' : page === 'task-chat' ? 'Comparing project tools' : 'Orbit';
 
   return (
     <div className="app-shell">
@@ -63,6 +66,7 @@ export default function App() {
         <main className={`main-stage ${page === 'tasks' || page === 'task-chat' ? 'with-inspector' : ''}`}>
           {page === 'tasks' && <TasksPage navigate={navigate} />}
           {page === 'library' && <LibraryPage showNotice={showNotice} />}
+          {page === 'slides-images' && <SlidesImagesPage showNotice={showNotice} />}
           {page === 'integrations' && <IntegrationsPage showNotice={showNotice} />}
           {page === 'settings' && <SettingsPage showNotice={showNotice} />}
           {page === 'task-chat' && <TaskChatPage navigate={navigate} showNotice={showNotice} />}

@@ -1,9 +1,11 @@
 # TODO
 
-- [x] Implement the shared Orbit workspace shell and navigation. The UI provides the “New task” action and navigation between Tasks, Library, Integrations, and Settings, with an original Orbit logo treatment and the reference’s ivory/white/navy/teal/lavender visual style.
-- [x] Implement the revised Tasks page as schedules and automations, not an all-task history list. It shows schedule cards, automation rows, and a workspace activity/progress panel; the Recent section is omitted from the sidebar.
-- [x] Implement the Library page with a file-creation/upload affordance, searchable library content, and document cards styled to match the reference.
-- [x] Implement the Integrations page with search/filter controls and integration cards showing connected/connect states, without claiming to connect real services.
-- [x] Implement the Settings page with Profile, Preferences, Privacy & safety, and Notifications sections and working local preference toggles.
-- [x] Implement the active-task conversation page with a user request, agent response, task-progress timeline, approval indicator, and message composer; it is reachable from the active task card.
-- [x] Add the declared SPA routes and ensure the front-end production build succeeds (`npm run build`).
+- [x] Implement the shared Orbit shell and navigation in the reference palette.
+- [x] Implement Tasks as schedules and automations, without a Recent sidebar block or an all-task history list.
+- [x] Implement Library search, file cards, upload affordance, and document/spreadsheet create actions.
+- [x] Implement Integrations with category filters and demo connect states.
+- [x] Implement Settings sections and local preference toggles.
+- [x] Implement the active-task chat with progress, approval status, and message composer.
+- [x] Add Canvas to the chat composer’s plus menu, not to the navigation. Selecting Canvas enables document/spreadsheet creation mode, and prompts show an inline Canvas workspace and draft preview in the conversation.
+- [x] Add a “Slides & images” navigation tab with presentation controls, slide previews, and an images view.
+- [x] Update the route manifest and confirm the production build succeeds.

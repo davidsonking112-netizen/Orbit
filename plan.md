@@ -1,25 +1,21 @@
 # Orbit UI implementation plan
 
 ## Scope
-Build a responsive front-end prototype in this repository for the Orbit AI-agent workspace, matching the user-provided concept images. Include the four requested navigation pages—Tasks, Library, Integrations, and Settings—and a task-conversation screen reachable from the in-progress activity card. Tasks follows the latest revision: schedules and automations, not an all-task history list, and no Recent block in the sidebar. No backend, authentication, real file processing, or external integrations are in scope.
+Build a responsive front-end prototype for the Orbit AI-agent workspace. The app includes the revised Tasks page (schedules and automations, not a task-history list), Library, Integrations, Settings, and an active-task chat. Canvas is not a navigation tab: users open Canvas from the chat composer’s plus button, select a document or spreadsheet, describe the file, and see the work area and preview inline in chat. Add one separate “Slides & images” tab with presentation and image previews.
 
 ## Design
-Use the supplied Orbit mockups as the visual reference: warm ivory navigation rail, bright white work surfaces, dark navy actions, muted teal status accents and soft lavender highlights. Keep the interface calm, spacious, grid-aligned, and visually consistent across pages. Use the existing Orbit wordmark concept as a simple original ring mark plus text. Use clear typography, soft borders, rounded cards, and restrained shadows. Interactions should remain lightweight: tab navigation, searchable/filterable items, enabled toggles, schedule creation prompt, upload affordance, and the active-task route. The prototype should not imply that simulated integrations or schedules actually execute.
+Follow the supplied Orbit mockups: warm ivory navigation rail, white work surfaces, dark navy actions, muted teal status accents and soft lavender highlights. Keep spacing, cards, typography, and controls consistent. Preserve the active-task progress and approval context. Present Canvas as an in-chat tool mode, not a standalone page. Present slide/image work as a gallery and preview workspace in its own tab.
 
 ## Implementation approach
-Use Vite + React + lucide-react for a small browser-only SPA. Keep shared shell/navigation in `src/App.jsx`, page-specific UI in `src/pages/`, and visual tokens/layout in `src/styles.css`. Use browser history paths for the primary tabs and `/task/compare` for the running task conversation. Publish the route manifest as `public/manus-routes.json`. Add only client-side sample content; do not add secrets or a backend.
+Continue the existing Vite + React SPA and local-only interaction model. Extend the chat composer to open a plus menu, switch on Canvas mode, choose a document/spreadsheet, accept a prompt, and show an inline Canvas draft preview. Add `/slides-images` with presentation/image sections and CSS-rendered sample previews; no image generation, model calls, or paid credits are needed. Keep integrations, schedules, Canvas actions and slide/image creation clearly as prototype-only local UI until backend services are connected.
 
 ## Project structure
-- `index.html`: SPA document entry and page metadata.
-- `src/main.jsx`: React bootstrap.
-- `src/App.jsx`: shared app shell, navigation, route state, top bar.
-- `src/pages/TasksPage.jsx`: schedules and automations page with workspace activity panel.
-- `src/pages/LibraryPage.jsx`: file-library and create/upload affordances.
-- `src/pages/IntegrationsPage.jsx`: integration catalog and connect states.
-- `src/pages/SettingsPage.jsx`: preference and privacy controls.
-- `src/pages/TaskChatPage.jsx`: running task conversation and progress timeline.
-- `src/styles.css`: responsive design system and page styles.
-- `public/manus-routes.json`: SPA page route declarations.
+- `src/App.jsx`: shared shell/navigation and routing.
+- `src/pages/TaskChatPage.jsx`: active conversation, Canvas mode and inline draft preview.
+- `src/pages/SlidesImagesPage.jsx`: presentations and images tab with sample previews.
+- Existing Tasks, Library, Integrations, Settings page modules remain in `src/pages/`.
+- `src/styles.css`: shared and responsive styling, including Canvas and visual-preview components.
+- `public/manus-routes.json`: synchronized SPA routes.
 
 ## Constraints
-The repository is empty, so establish the front-end toolchain from scratch. Use mocked content and local UI state only. Keep the build self-contained and avoid spending credits on further image generation; the provided images are reference material, not production assets.
+Use existing dependencies and mock/sample UI data. Do not invoke image generation or any credit-consuming model. Do not add credentials or backend integrations; real AI generation can be connected later when model/API behavior and budget are approved.

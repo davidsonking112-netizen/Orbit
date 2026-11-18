@@ -3,8 +3,9 @@
     { "path": "/", "title": "Schedules & automations" },
     { "path": "/tasks", "title": "Schedules & automations" },
     { "path": "/library", "title": "Library" },
+    { "path": "/slides-images", "title": "Slides & images" },
     { "path": "/integrations", "title": "Integrations" },
     { "path": "/settings", "title": "Settings" },
-    { "path": "/task/:taskId", "title": "Active task" }
+    { "path": "/task/:taskId", "title": "Active task with Canvas" }
   ]
 }
