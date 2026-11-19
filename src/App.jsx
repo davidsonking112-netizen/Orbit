@@ -64,7 +64,7 @@ export default function App() {
           </nav>
         </aside>
         <main className={`main-stage ${page === 'tasks' || page === 'task-chat' ? 'with-inspector' : ''}`}>
-          {page === 'tasks' && <TasksPage navigate={navigate} />}
+          {page === 'tasks' && <TasksPage navigate={navigate} showNotice={showNotice} />}
           {page === 'library' && <LibraryPage showNotice={showNotice} />}
           {page === 'slides-images' && <SlidesImagesPage showNotice={showNotice} />}
           {page === 'integrations' && <IntegrationsPage showNotice={showNotice} />}

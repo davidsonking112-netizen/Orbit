@@ -1,6 +1,6 @@
 # Orbit — AI workspace UI prototype
 
-A responsive React/Vite front-end prototype inspired by the Orbit design mockups. It includes schedules and automations, a file library, integrations, settings, an active-task conversation, an in-chat Canvas mode, and a Slides & images workspace.
+A responsive React/Vite prototype inspired by the Orbit design mockups. It includes schedule and automation controls, a local file library, demo integration toggles, editable settings, a sample task chat with in-chat Canvas, and a Slides & images workspace.
 
 ## Run locally
 
@@ -9,4 +9,10 @@ npm install
 npm run dev
 ```
 
-Canvas opens from the plus button in chat and previews document or spreadsheet drafts inline. The Slides & images tab shows CSS-based presentation and image previews. These creation flows, integrations, schedules, and preferences are prototype-only local UI; they are not connected to an AI model or real services. No image generation or AI credits are used by these previews.
+## Local demo behavior
+
+Schedules and automation rules, integration demo states, settings, chat messages, Canvas drafts, library metadata, and visual preview cards are saved in this browser with `localStorage`. They are browser/device-specific and are removed if site data is cleared. No account login or cloud sync is provided.
+
+The Library file picker records filename/type/size metadata only; it does not read or upload file contents. Blank document and spreadsheet drafts can be edited locally. Canvas edits and follow-up prompts update a local preview, not an AI-generated response. Slides and image entries are CSS preview cards, not generated media. Integration switches do not connect external accounts, and schedule previews do not create live background jobs.
+
+No model, image-generation, or other paid service is called by these prototype flows. Real AI generation, OAuth integrations, durable file storage, and background scheduling require a future backend phase.
