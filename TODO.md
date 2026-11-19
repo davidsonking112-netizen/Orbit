@@ -15,4 +15,4 @@
 - [x] **Chat and Canvas:** Retain chat messages, Canvas type, and draft across page navigation and refresh; let follow-up prompts update the inline document/spreadsheet preview using local demo content, without claiming or invoking a live AI response.
 - [x] **Slides & images:** Create, search, open, and delete presentation/image preview entries; persist the entries locally and clearly identify them as previews rather than generated media.
 - [x] **Cross-screen UX:** Preserve the existing responsive Orbit visual design, add keyboard-accessible controls and useful empty/confirmation states, and confirm the production build succeeds.
-- [ ] **Repository delivery:** Push the finished, tested changes to the connected `Orbit` repository’s `main` branch.
+- [x] **Repository delivery:** Push the finished, tested changes to the connected `Orbit` repository’s `main` branch.
