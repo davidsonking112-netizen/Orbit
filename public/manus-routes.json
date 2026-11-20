@@ -1,6 +1,5 @@
 {
   "routes": [
-    { "path": "/agent", "title": "Agent workbench" },
     { "path": "/", "title": "Schedules & automations" },
     { "path": "/tasks", "title": "Schedules & automations" },
     { "path": "/library", "title": "Library" },

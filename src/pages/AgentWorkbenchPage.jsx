@@ -10,7 +10,7 @@ async function api(path, options) {
 
 const fallbackPrompt = 'Research the latest practical guidance for small teams adopting AI tools and cite the strongest sources.';
 
-export default function AgentWorkbenchPage({ showNotice }) {
+export default function AgentWorkbenchPage({ showNotice, embedded = false }) {
   const [capabilities, setCapabilities] = useState({ skills: [], tools: [] });
   const [schedules, setSchedules] = useState([]);
   const [runs, setRuns] = useState([]);
@@ -50,8 +50,9 @@ export default function AgentWorkbenchPage({ showNotice }) {
     catch (error) { setRuntimeError(error.message); }
   };
 
-  return <section className="page-content agent-workbench-page">
-    <div className="page-title-row"><div><h1>Agent workbench</h1><p className="page-subtitle">Live web search, composable skills, tools, and real automations</p></div><button className="secondary-dark-button" onClick={load}><RefreshCw size={14} /> Refresh runtime</button></div>
+  return <section className={`page-content agent-workbench-page ${embedded ? 'embedded-agent-workbench' : ''}`}>
+    {!embedded && <div className="page-title-row"><div><h1>Agent workbench</h1><p className="page-subtitle">Live web search, composable skills, tools, and real automations</p></div><button className="secondary-dark-button" onClick={load}><RefreshCw size={14} /> Refresh runtime</button></div>}
+    {embedded && <div className="embedded-workbench-actions"><span>Runtime controls</span><button className="secondary-dark-button" onClick={load}><RefreshCw size={14} /> Refresh</button></div>}
     <div className="agent-runtime-banner"><span className="online-dot" /><div><b>Runtime connected</b><span>Server-side execution is enabled. Tools run in parallel when selected; skills load progressively from metadata to instructions.</span></div><span className="demo-badge">LIVE</span></div>
     {runtimeError && <div className="agent-error" role="alert">{runtimeError} <button onClick={load}>Retry</button></div>}
     <div className="agent-grid">

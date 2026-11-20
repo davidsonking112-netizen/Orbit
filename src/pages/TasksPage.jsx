@@ -4,6 +4,7 @@ import {
   Plus, Trash2, X,
 } from 'lucide-react';
 import usePersistentState from '../hooks/usePersistentState.js';
+import AgentWorkbenchPage from './AgentWorkbenchPage.jsx';
 
 const initialSchedules = [
   { id: 'weekly-research', title: 'Weekly research digest', frequency: 'weekly', time: '09:00', day: 'Monday', icon: 'file', enabled: true },
@@ -115,7 +116,7 @@ export default function TasksPage({ navigate, showNotice }) {
         <div><h1>Schedules &amp; automations</h1><p className="page-subtitle">Set up work Orbit can run for you</p></div>
         <button className="primary-button" onClick={() => openSchedule()}><Plus size={16} /> Create schedule</button>
       </div>
-      <div className="local-demo-note"><Clock3 size={14} /><span>Local demo only — schedules and automations are saved here, but no background work is running.</span></div>
+      <div className="local-demo-note"><Clock3 size={14} /><span>These sample cards are browser-local previews. Use Live automations below for server-backed schedules and test runs.</span></div>
       <div className="schedule-grid">
         {schedules.map((item) => {
           const Icon = scheduleIcons[item.icon] || CalendarDays;
@@ -147,6 +148,10 @@ export default function TasksPage({ navigate, showNotice }) {
         />)}
         {automations.length === 0 && <div className="empty-state automation-empty"><Check size={22} /><b>No automation rules yet</b><span>Add a local demo rule to see it here.</span></div>}
       </div>
+      <div className="section-heading-row automation-heading live-automation-heading">
+        <div><h2>Live automations</h2><p>Manus-style skills, tools, schedules, test runs, and inspectable results.</p></div>
+      </div>
+      <AgentWorkbenchPage showNotice={showNotice} embedded />
     </section>
     <aside className="inspector task-inspector">
       <div className="inspector-title"><h2>Workspace &amp; automations</h2><span className="demo-badge">DEMO</span></div>
