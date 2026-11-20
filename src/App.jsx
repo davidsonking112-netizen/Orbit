@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Archive, Bell, CalendarDays, Check, CheckSquare, ChevronDown, CircleHelp,
-  Clock3, Command, Images, Link2, Plus, Settings as SettingsIcon, X,
+  Clock3, Command, Images, Link2, Plus, Settings as SettingsIcon, Sparkles, X,
 } from 'lucide-react';
 import CommandPalette from './components/CommandPalette.jsx';
 import usePersistentState from './hooks/usePersistentState.js';
@@ -12,8 +12,10 @@ import IntegrationsPage from './pages/IntegrationsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import SlidesImagesPage from './pages/SlidesImagesPage.jsx';
 import TaskChatPage from './pages/TaskChatPage.jsx';
+import AgentWorkbenchPage from './pages/AgentWorkbenchPage.jsx';
 
 const nav = [
+  { id: 'agent', label: 'Agent workbench', icon: Sparkles, path: '/agent' },
   { id: 'tasks', label: 'Tasks', icon: CheckSquare, path: '/tasks' },
   { id: 'library', label: 'Library', icon: Archive, path: '/library' },
   { id: 'slides-images', label: 'Slides & images', icon: Images, path: '/slides-images' },
@@ -23,6 +25,7 @@ const nav = [
 
 function pageFromPath(path) {
   if (path.startsWith('/task/')) return 'task-chat';
+  if (path === '/agent') return 'agent';
   if (path === '/library') return 'library';
   if (path === '/slides-images') return 'slides-images';
   if (path === '/integrations') return 'integrations';
@@ -91,6 +94,7 @@ export default function App() {
   const latestRun = safeRuns.reduce((latest, run) => !latest || (run.updatedAt || '') > (latest.updatedAt || '') ? run : latest, null);
   const commands = [
     { id: 'new-task', title: 'New task', description: 'Start a fresh local run preview', icon: Plus, action: createNewTask },
+    { id: 'agent-workbench', title: 'Agent workbench', description: 'Run live tools, skills, and automations', icon: Sparkles, action: () => navigate('/agent') },
     { id: 'schedules', title: 'Schedules & automations', description: 'Open recurring and triggered workflows', icon: CalendarDays, action: () => navigate('/tasks') },
     { id: 'library', title: 'Library', description: 'Open local files and drafts', icon: Archive, action: () => navigate('/library') },
     { id: 'slides-images', title: 'Slides & images', description: 'Open presentation and image previews', icon: Images, action: () => navigate('/slides-images') },
@@ -98,7 +102,8 @@ export default function App() {
     { id: 'settings', title: 'Settings', description: 'Manage preferences and local workspace data', icon: SettingsIcon, action: () => navigate('/settings') },
     ...(latestRun ? [{ id: 'latest-run', title: `Continue: ${latestRun.title || 'Local task'}`, description: 'Reopen the most recently updated local run', icon: Clock3, action: () => navigate(`/task/${encodeURIComponent(latestRun.id)}`) }] : []),
   ];
-  const title = page === 'library' ? 'Library'
+  const title = page === 'agent' ? 'Agent workbench'
+    : page === 'library' ? 'Library'
     : page === 'slides-images' ? 'Slides & images'
       : page === 'integrations' ? 'Integrations'
         : page === 'settings' ? 'Settings'
@@ -118,6 +123,7 @@ export default function App() {
         </nav>
       </aside>
       <main className={`main-stage ${page === 'tasks' || page === 'task-chat' ? 'with-inspector' : ''}`}>
+        {page === 'agent' && <AgentWorkbenchPage showNotice={showNotice} />}
         {page === 'tasks' && <TasksPage navigate={navigate} showNotice={showNotice} />}
         {page === 'library' && <LibraryPage showNotice={showNotice} />}
         {page === 'slides-images' && <SlidesImagesPage showNotice={showNotice} />}
