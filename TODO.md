@@ -23,4 +23,4 @@
 - [x] **Canvas exports:** Keep Canvas in chat, retain editable title/content locally, and let users download a document draft as Markdown or a spreadsheet as CSV using the browser; do not upload draft contents.
 - [x] **Local data controls:** Add Settings actions to export the local workspace as JSON, restore a valid JSON backup, and clear Orbit's local data only after explicit confirmation. Explain that data stays in this browser and backups are needed to move it to another device.
 - [x] **Design and cost boundary:** Reuse the current Orbit visual system and existing dependencies. Do not add an LLM/model call, image-generation call, connector, backend, new paid service, or real background scheduler in this phase.
-- [ ] **Repository delivery:** After implementation and checks, push the changes to the connected `Orbit` repository's `main` branch.
+- [x] **Repository delivery:** After implementation and checks, push the changes to the connected `Orbit` repository's `main` branch.
