@@ -16,3 +16,11 @@
 - [x] **Slides & images:** Create, search, open, and delete presentation/image preview entries; persist the entries locally and clearly identify them as previews rather than generated media.
 - [x] **Cross-screen UX:** Preserve the existing responsive Orbit visual design, add keyboard-accessible controls and useful empty/confirmation states, and confirm the production build succeeds.
 - [x] **Repository delivery:** Push the finished, tested changes to the connected `Orbit` repository’s `main` branch.
+
+## Approved Phase 2 outcomes
+- [x] **Task runs:** Make New task open a fresh local run instead of the hard-coded sample. Persist the prompt, editable plan steps, and run state. Show explicit draft, plan-review, waiting/working, review-required, paused, cancelled, and completed states with approve, pause, resume, retry, and cancel controls. Keep every state clearly marked as a local demo; do not imply that an agent or background job actually ran. Keep the Tasks tab dedicated to Schedules & automations, not task history.
+- [x] **Command palette:** Make Ctrl/Cmd+K open a keyboard-accessible palette for navigation, New task, and key local actions; support keyboard focus, selection, and Escape to close.
+- [x] **Canvas exports:** Keep Canvas in chat, retain editable title/content locally, and let users download a document draft as Markdown or a spreadsheet as CSV using the browser; do not upload draft contents.
+- [x] **Local data controls:** Add Settings actions to export the local workspace as JSON, restore a valid JSON backup, and clear Orbit's local data only after explicit confirmation. Explain that data stays in this browser and backups are needed to move it to another device.
+- [x] **Design and cost boundary:** Reuse the current Orbit visual system and existing dependencies. Do not add an LLM/model call, image-generation call, connector, backend, new paid service, or real background scheduler in this phase.
+- [ ] **Repository delivery:** After implementation and checks, push the changes to the connected `Orbit` repository's `main` branch.

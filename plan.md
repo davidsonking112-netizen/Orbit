@@ -1,33 +1,31 @@
-# Orbit — functionality phase plan
+# Orbit — proposed Phase 2 plan
 
-## Scope
-Add useful, persistent front-end behavior across the existing Orbit screens while preserving the reference-matched design. This phase stays browser-local: it adds no backend, OAuth connection, real background scheduler, LLM call, image-generation call, or new paid service. The user asked to start adding UX/functionality and push the changes to the connected Orbit GitHub repository.
+## Current baseline
 
-## Product behavior
-- **Tasks — schedules & automations:** create schedules with a name, cadence, and time; pause/resume and delete schedules; create, pause/resume, and delete automation rules. Persist demo configuration in this browser. Clearly communicate that it is not yet a live background scheduler.
-- **Library:** upload local files into a local library view with filename/type/size metadata; drag-and-drop and browse work; search/filter/grid/list remain functional; create blank-document and spreadsheet preview entries; open a preview and delete an entry. Do not upload user files to a server in this phase.
-- **Integrations:** connect/disconnect demo service cards and remember the toggles locally, with clear copy that no external account or OAuth connection is made.
-- **Settings:** make the sections and profile/preferences/privacy/notification controls editable; persist settings locally and make Save provide a truthful saved-state confirmation.
-- **Chat and Canvas:** preserve chat messages and Canvas mode/type/draft locally; let follow-up prompts update/refine the in-chat document or spreadsheet preview. Do not claim a live AI response; the local preview can only reflect user input and demo content.
-- **Slides & images:** persist local presentation/image preview cards; create, search, open, and delete local preview entries. Keep the existing CSS-based previews and do not call image-generation or slide-generation services.
+Phase 1 is implemented and pushed to `main` (`3acc24a` before this plan update). Orbit has a responsive shell, schedule/automation management, a browser-local Library, demo integration switches, editable local Settings, sample task chat, in-chat Canvas, and local Slides & images preview cards. The app currently has no server-side agent execution, AI provider calls, OAuth, file uploads, or live scheduler. The Tasks tab is intentionally **Schedules & automations**, not a list of all tasks.
+
+## Proposed next phase: Manus-like workbench, without model/API spend
+
+Improve the user's path from a new request to a reviewed artifact, while keeping this phase fully local and clearly labeled as a prototype:
+
+- **Run-centered task flow:** Make **New task** create a fresh local run/session rather than reopening the single hard-coded sample conversation. Store the prompt, editable plan steps, and visible state for that run. Present a Manus-style timeline with explicit draft, plan review, waiting/working, review-required, paused, cancelled, and completed states. Pause, resume, cancel, retry, and approve actions may update only local demo state; the UI must never imply that a real agent or background job has executed. Do not turn the Tasks tab into task history.
+- **Efficient navigation:** Implement the existing command/shortcut affordance as a keyboard-accessible command palette (Ctrl/Cmd+K) for navigation, New task, and key local actions. Keep the current left navigation and route set unless implementation requires a new explicit route.
+- **Useful Canvas outputs:** Keep Canvas in chat, add reliable editable title/content and save-state feedback, and provide browser downloads for document drafts as Markdown and spreadsheet drafts as CSV. Retain current content locally; do not upload it.
+- **User-controlled local data:** Add a Settings control to export and restore Orbit's local workspace as JSON, plus a clear-all-data action with an explicit confirmation. Keep all stored values on the device and explain that a backup is needed to transfer them to another browser/device.
+- **Preserve visual/product decisions:** Keep the ivory sidebar, white work area, navy actions, teal state accents, lavender Canvas treatment, mobile responsiveness, and the existing Slides & images preview page. No all-task list, new remote integrations, or decorative image generation in this phase.
 
 ## Design and interaction
-Reuse Orbit’s ivory navigation, white panels, navy primary actions, teal status accents, lavender Canvas treatment, and responsive layout. Make controls keyboard-operable, provide labels and clear empty states, show confirmations through the existing toast/modal patterns, and explain browser-local/demo behavior where a control could otherwise imply a real remote action.
 
-## Implementation approach
-Continue the existing Vite + React SPA without adding dependencies. Add a small defensive `localStorage` hook for JSON-compatible state and use it only for browser-local metadata/preferences; keep actual `File` objects and file contents transient in memory. Update existing page modules and styles rather than replacing the visual system. Keep `public/manus-routes.json` synchronized. Build and inspect the resulting UI, then commit and push to `origin/main`.
+Reuse the established Orbit workspace style rather than redesigning it. Make the command palette a compact, high-contrast overlay; keep the task timeline and plan in the existing split workbench; place review/approval actions near the relevant step or artifact. Maintain readable status labels, keyboard focus management, confirmation before cancel/clear actions, and plain-language disclosure when a state is only a local preview. Prefer short, responsive transitions and avoid progress animation that suggests real execution.
 
-## Project structure
-- `src/App.jsx`: shared shell, route selection, and notices.
-- `src/hooks/usePersistentState.js`: reusable, error-tolerant browser persistence for UI state.
-- `src/pages/TasksPage.jsx`: schedule and automation CRUD/toggle demo flows.
-- `src/pages/LibraryPage.jsx`: local file metadata, filters, preview, create, and remove flows.
-- `src/pages/IntegrationsPage.jsx`: clearly demo-only connection state.
-- `src/pages/SettingsPage.jsx`: editable and locally persisted settings.
-- `src/pages/TaskChatPage.jsx`: persistent chat and Canvas draft workspace.
-- `src/pages/SlidesImagesPage.jsx`: persistent local previews and detail views.
-- `src/styles.css`: retain the reference style and add responsive modal/menu/form states.
-- `public/manus-routes.json`: unchanged route set, synchronized if it changes.
+Brand essence remains: **a calm, dependable personal workbench for getting useful work organized and reviewed**. Personality: focused, clear, capable. Keep the Orbit mark and wordmark; the signature teal status cue and restrained lavender Canvas accent stay consistent. Voice: concise, specific, and transparent. Example copy: “Review the plan before continuing.” / “Saved in this browser; no agent run was started.”
 
-## Constraints
-No use of image or video generation; no LLM calls or external connectors; no new paid service or dependency. Browser-local state is device/browser-specific and can be cleared by clearing site data. Real accounts, file storage, AI generation, and scheduled execution remain future backend work.
+## Implementation approach and project structure
+
+Continue with the existing React/Vite SPA and current `lucide-react` icons; add no dependency, AI/model call, image-generation call, connector, server, or paid service. Use browser `localStorage` and native download/file APIs only. A small storage utility under `src/lib/` will own a versioned workspace schema, safe JSON import/export, and clear/reset behavior; `src/hooks/usePersistentState.js` remains the page-level hook. `src/App.jsx` owns New task routing, shared shell, and the command-palette shortcut. A focused component under `src/components/` owns palette keyboard/focus behavior. `src/pages/TaskChatPage.jsx` owns the local run lifecycle and inline Canvas actions; `TasksPage.jsx` remains only Schedules & automations. `LibraryPage.jsx`, `SettingsPage.jsx`, and `SlidesImagesPage.jsx` retain their current local-first responsibilities, with Settings exposing backup/reset. `src/styles.css` holds palette, timeline, modal, focus, and responsive states. `public/manus-routes.json` is updated only if a route actually changes.
+
+There is no backend in this phase. Real LLM task execution, browser/tool control, account connections, durable cloud files, and live scheduling are a later separately scoped phase because they require provider/connector choices and may consume credits. Do not call these services without the user's explicit approval.
+
+## Approval status
+
+The user approved this Phase 2 scope on 2026-11-19. Implementation may proceed within the stated local-only, no-model/no-image-generation constraints. Any real AI execution, external connector, backend, or paid service remains out of scope and requires a separate explicit plan and approval.

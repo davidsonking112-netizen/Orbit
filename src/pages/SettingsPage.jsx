@@ -1,6 +1,12 @@
-import { useState } from 'react';
-import { Bell, Check, ChevronRight, LockKeyhole, ShieldCheck, SlidersHorizontal, UserRound } from 'lucide-react';
+import { useRef, useState } from 'react';
+import {
+  Bell, Check, ChevronRight, Download, HardDrive, LockKeyhole,
+  ShieldCheck, SlidersHorizontal, Trash2, Upload, UserRound,
+} from 'lucide-react';
 import usePersistentState from '../hooks/usePersistentState.js';
+import {
+  clearWorkspaceData, downloadWorkspaceBackup, MAX_BACKUP_BYTES, restoreWorkspaceBackup,
+} from '../lib/localWorkspaceStore.js';
 
 const initialSettings = {
   profile: { name: 'Jordan Diaz', email: 'jordan@example.com' },
@@ -23,11 +29,15 @@ const sections = [
   { id: 'Preferences', icon: SlidersHorizontal },
   { id: 'Privacy & safety', icon: ShieldCheck },
   { id: 'Notifications', icon: Bell },
+  { id: 'Local data', icon: HardDrive },
 ];
 
 export default function SettingsPage({ showNotice }) {
   const [active, setActive] = useState('Privacy & safety');
   const [settings, setSettings] = usePersistentState('orbit:v1:settings', initialSettings);
+  const [restoreError, setRestoreError] = useState('');
+  const [confirmClear, setConfirmClear] = useState(false);
+  const importInputRef = useRef(null);
   const ActiveIcon = sections.find((section) => section.id === active)?.icon || ShieldCheck;
 
   const updateGroup = (group, patch) => setSettings((current) => ({ ...current, [group]: { ...current[group], ...patch } }));
@@ -36,6 +46,40 @@ export default function SettingsPage({ showNotice }) {
     [group]: current[group].map((item, itemIndex) => itemIndex === index ? { ...item, enabled: !item.enabled } : item),
   }));
   const save = () => showNotice('Settings saved in this browser only. Nothing was sent to a server.');
+
+  const exportWorkspace = () => {
+    try {
+      const name = downloadWorkspaceBackup();
+      showNotice(`Downloaded ${name}. Keep the backup somewhere safe.`);
+    } catch {
+      showNotice('Orbit could not create the backup in this browser.');
+    }
+  };
+
+  const importWorkspace = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    setRestoreError('');
+    if (file.size > MAX_BACKUP_BYTES) {
+      setRestoreError('This file is larger than the 5 MB browser-local backup limit.');
+      return;
+    }
+    try {
+      const result = restoreWorkspaceBackup(await file.text());
+      showNotice(`Restored ${result.restoredCount} local workspace items. Reloading…`);
+      window.setTimeout(() => window.location.reload(), 450);
+    } catch (error) {
+      setRestoreError(error.message || 'Orbit could not restore this backup.');
+    }
+  };
+
+  const clearLocalWorkspace = () => {
+    clearWorkspaceData();
+    setConfirmClear(false);
+    showNotice('Local Orbit data cleared. Reloading the default demo workspace…');
+    window.setTimeout(() => window.location.reload(), 450);
+  };
 
   return <section className="page-content settings-page">
     <div className="page-title-row"><div><h1>Settings</h1><p className="page-subtitle">Make Orbit work the way you do</p></div><button className="save-button" onClick={save}><Check size={15} /> Save changes</button></div>
@@ -56,9 +100,20 @@ export default function SettingsPage({ showNotice }) {
         </div>}
         {active === 'Privacy & safety' && <><div className="settings-group-label">APPROVALS &amp; DATA</div><div className="settings-options">{settings.privacy.map((item, index) => <SettingRow key={item.title} item={item} onToggle={() => toggleItem('privacy', index)} />)}</div><div className="privacy-note"><LockKeyhole size={17} /><p><b>Your workspace, your rules</b><span>These controls save as local preferences only; they do not change external services in this prototype.</span></p></div></>}
         {active === 'Notifications' && <><div className="settings-group-label">LOCAL NOTIFICATION PREFERENCES</div><div className="settings-options">{settings.notifications.map((item, index) => <SettingRow key={item.title} item={item} onToggle={() => toggleItem('notifications', index)} />)}</div><div className="privacy-note"><Bell size={17} /><p><b>No alerts are sent</b><span>These are saved preferences for a future connected version. This prototype does not send email, push, or scheduled notifications.</span></p></div></>}
+        {active === 'Local data' && <div className="local-data-content">
+          <div className="local-data-disclosure"><LockKeyhole size={16} /><span>Workspace data stays in this browser. Orbit does not upload the backup; use it to move your local demo data to another browser or device.</span></div>
+          <div className="local-data-actions">
+            <article className="local-data-card"><div className="local-data-card-icon"><Download size={17} /></div><h3>Export a backup</h3><p>Download your Orbit settings, schedules, local runs, Canvas drafts, and preview entries as a JSON file.</p><button type="button" className="run-secondary-button" onClick={exportWorkspace}><Download size={14} /> Download JSON backup</button></article>
+            <article className="local-data-card"><div className="local-data-card-icon"><Upload size={17} /></div><h3>Restore a backup</h3><p>Replace this browser’s Orbit data with a valid Orbit JSON backup. Current local data will be replaced.</p><button type="button" className="run-secondary-button" onClick={() => importInputRef.current?.click()}><Upload size={14} /> Choose backup file</button><input ref={importInputRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Choose Orbit backup JSON file" onChange={importWorkspace} /></article>
+            <article className="local-data-card danger-card"><div className="local-data-card-icon danger-icon"><Trash2 size={17} /></div><h3>Clear local data</h3><p>Remove Orbit’s saved data from this browser. The default demo examples return after reload.</p><button type="button" className="run-danger-button" onClick={() => setConfirmClear(true)}><Trash2 size={14} /> Clear local workspace</button></article>
+          </div>
+          {restoreError && <div className="local-data-error" role="alert">{restoreError}</div>}
+          <p className="local-data-limit">JSON backups are limited to 5 MB in this prototype. They are read and written locally by your browser.</p>
+        </div>}
       </div>
     </div>
-    <div className="settings-footnote"><LockKeyhole size={13} /> Saved in this browser. <button onClick={() => showNotice('Your settings remain on this device until browser site data is cleared.')}>About local storage</button></div>
+    <div className="settings-footnote"><LockKeyhole size={13} /> Saved in this browser. <button onClick={() => showNotice('Orbit stores its demo workspace in this browser until you clear it or restore a backup.')}>About local storage</button></div>
+    {confirmClear && <div className="run-confirm-backdrop" role="presentation"><section className="run-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="clear-data-title"><h3 id="clear-data-title">Clear Orbit data from this browser?</h3><p>This removes saved local runs, Canvas drafts, Library changes, settings, schedules, and preview entries. The default demo examples return after refresh.</p><div><button type="button" className="run-secondary-button" onClick={() => setConfirmClear(false)}>Keep my data</button><button type="button" className="run-danger-button" onClick={clearLocalWorkspace}>Clear local data</button></div></section></div>}
   </section>;
 }
 
@@ -66,6 +121,7 @@ function sectionDescription(section) {
   if (section === 'Profile') return 'Edit the name and email shown in the local prototype.';
   if (section === 'Preferences') return 'Choose display preferences for a future connected version.';
   if (section === 'Notifications') return 'Set local preferences; no notifications are sent here.';
+  if (section === 'Local data') return 'Export, restore, or clear the Orbit workspace saved in this browser.';
   return 'Choose how Orbit should handle approvals and local data.';
 }
 
