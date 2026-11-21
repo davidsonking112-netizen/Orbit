@@ -26,3 +26,5 @@ The existing local prototype flows remain local-only, but the Tasks tab now prov
 ## Google AI Studio testing
 
 Integrations includes a Google AI Studio API-key input with a backend connection test. The key is sent to the Orbit runtime, tested against Gemini, and held only in process memory; it is not written to browser storage or committed to the repository. Restarting the runtime or choosing Disconnect clears it. For production, use an environment variable or a secret manager instead of a user-entered key.
+
+Orbit also accepts Composio Connect consumer keys (`ck_...`) through Composio's MCP handshake at `connect.composio.dev/mcp`; project REST keys (`ak_...`) use the toolkit API. Both credentials remain runtime-memory only.
