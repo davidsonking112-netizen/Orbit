@@ -4,6 +4,7 @@ import App from './App.jsx';
 import './styles.css';
 import './agent-workbench.css';
 import './tasks-live-automation.css';
+import './google-provider.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

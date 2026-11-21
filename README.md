@@ -22,3 +22,7 @@ Schedules and automation rules, integration demo states, settings, task runs, ch
 The Library file picker records filename/type/size metadata only; it does not read or upload file contents. Blank document and spreadsheet drafts can be edited locally. Canvas edits and follow-up prompts update a local preview, not an AI-generated response; documents download as Markdown and spreadsheets as CSV. Local task plan and approval controls only change demo state and do not start an agent or background task. Slides and image entries are CSS preview cards, not generated media. Integration switches do not connect external accounts, and schedule previews do not create live background jobs.
 
 The existing local prototype flows remain local-only, but the Tasks tab now provides a real server runtime for read-only web research and schedules. Real model execution, OAuth integrations, durable cloud storage, and external side effects still require a separately approved backend phase.
+
+## Google AI Studio testing
+
+Integrations includes a Google AI Studio API-key input with a backend connection test. The key is sent to the Orbit runtime, tested against Gemini, and held only in process memory; it is not written to browser storage or committed to the repository. Restarting the runtime or choosing Disconnect clears it. For production, use an environment variable or a secret manager instead of a user-entered key.

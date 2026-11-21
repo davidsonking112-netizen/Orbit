@@ -3,6 +3,7 @@ import { runAgent } from './agent.mjs';
 import { loadSkills } from './skills.mjs';
 import { toolCatalog } from './tools.mjs';
 import { createSchedule, deleteSchedule, listRuns, listSchedules, runSchedule, startScheduler, updateSchedule } from './scheduler.mjs';
+import { connectGoogleAiStudio, disconnectGoogleAiStudio, getGoogleAiStudioStatus, testGoogleAiStudio } from './google-ai-studio.mjs';
 
 const port = Number(process.env.PORT || 8787);
 const json = (response, status, value) => { response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*', 'cache-control': 'no-store' }); response.end(JSON.stringify(value)); };
@@ -17,6 +18,10 @@ const server = createServer(async (request, response) => {
     if (request.method === 'GET' && url.pathname === '/api/skills') return json(response, 200, { skills: loadSkills({ includeInstructions: url.searchParams.get('instructions') === 'true' }) });
     if (request.method === 'GET' && url.pathname === '/api/tools') return json(response, 200, { tools: toolCatalog });
     if (request.method === 'GET' && url.pathname === '/api/schedules') return json(response, 200, { schedules: listSchedules(), runs: listRuns() });
+    if (request.method === 'GET' && url.pathname === '/api/providers/google-ai-studio') return json(response, 200, getGoogleAiStudioStatus());
+    if (request.method === 'POST' && url.pathname === '/api/providers/google-ai-studio/connect') return json(response, 200, await connectGoogleAiStudio((await body(request)).apiKey));
+    if (request.method === 'POST' && url.pathname === '/api/providers/google-ai-studio/test') return json(response, 200, await testGoogleAiStudio((await body(request)).prompt));
+    if (request.method === 'DELETE' && url.pathname === '/api/providers/google-ai-studio') return json(response, 200, disconnectGoogleAiStudio());
     if (request.method === 'POST' && url.pathname === '/api/agent/run') return json(response, 200, { run: await runAgent(await body(request)) });
     if (request.method === 'POST' && url.pathname === '/api/schedules') return json(response, 201, { schedule: createSchedule(await body(request)) });
     const scheduleMatch = url.pathname.match(/^\/api\/schedules\/([^/]+)(?:\/run)?$/);
