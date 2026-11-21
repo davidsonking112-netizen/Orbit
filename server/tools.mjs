@@ -1,4 +1,5 @@
 import { loadSkills } from './skills.mjs';
+import { callComposioTool } from './composio.mjs';
 
 const USER_AGENT = 'Orbit/1.0 (local agent workspace)';
 
@@ -36,11 +37,13 @@ export const toolCatalog = [
   { id: 'web_search', name: 'Web search', description: 'Searches the public web and returns titled results with URLs and snippets.', input: '{ query, limit }', sideEffect: 'read-only' },
   { id: 'fetch_url', name: 'Fetch URL', description: 'Reads a public HTTP(S) page for source verification.', input: '{ url }', sideEffect: 'read-only' },
   { id: 'list_skills', name: 'List skills', description: 'Loads skill metadata without loading full instructions.', input: '{}', sideEffect: 'read-only' },
+  { id: 'composio_mcp', name: 'Composio MCP', description: 'Searches connected Composio apps and returns the best available tools for the requested outcome.', input: '{ prompt }', sideEffect: 'read-only discovery; selected app tools require explicit execution' },
 ];
 
 export async function executeTool(id, input = {}) {
   if (id === 'web_search') return webSearch(input);
   if (id === 'fetch_url') return fetchUrl(input);
   if (id === 'list_skills') return { skills: loadSkills().map(({ content, ...metadata }) => metadata) };
+  if (id === 'composio_mcp') return callComposioTool('COMPOSIO_SEARCH_TOOLS', { queries: [{ use_case: input.prompt || 'find tools for this request' }], session: { generate_id: true }, search_strategy: 'auto' });
   throw new Error(`Unknown tool: ${id}`);
 }

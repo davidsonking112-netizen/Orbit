@@ -10,7 +10,7 @@ export async function runAgent({ prompt, skillIds = [], toolIds = [], source = '
   if (selectedToolIds.length) plan.push(`Run ${selectedToolIds.length} tool${selectedToolIds.length === 1 ? '' : 's'} and keep each result visible`);
   const toolResults = await Promise.all(selectedToolIds.map(async (id) => {
     try {
-      const input = id === 'web_search' ? { query: prompt, limit: 5 } : id === 'fetch_url' ? { url: prompt.match(/https?:\/\/\S+/)?.[0] } : {};
+      const input = id === 'web_search' ? { query: prompt, limit: 5 } : id === 'fetch_url' ? { url: prompt.match(/https?:\/\/\S+/)?.[0] } : id === 'composio_mcp' ? { prompt } : {};
       return { toolId: id, status: 'completed', result: await executeTool(id, input) };
     } catch (error) { return { toolId: id, status: 'failed', error: error.message }; }
   }));
