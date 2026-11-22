@@ -21,18 +21,22 @@ function createId() {
   return globalThis.crypto?.randomUUID?.() ?? `run-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-export function createLocalRun() {
+export function createLocalRun(initialPrompt = '') {
   const now = new Date().toISOString();
+  const prompt = initialPrompt.trim();
+  const titleText = prompt.split(/[.!?\n]/)[0].trim().slice(0, 42) || 'New task';
+  const title = titleText[0].toUpperCase() + titleText.slice(1);
+  const seeded = Boolean(prompt);
   return {
     id: createId(),
-    title: 'New task',
-    prompt: '',
-    status: 'draft',
+    title,
+    prompt,
+    status: seeded ? 'plan-review' : 'draft',
     createdAt: now,
     updatedAt: now,
-    messages: [],
-    planSteps: [],
-    statusHistory: [{ status: 'draft', label: 'Local run created', at: now }],
+    messages: seeded ? [{ id: createId(), text: prompt, role: 'user', createdAt: now }] : [],
+    planSteps: seeded ? createSuggestedPlan() : [],
+    statusHistory: [{ status: seeded ? 'plan-review' : 'draft', label: seeded ? 'Request saved for local plan review' : 'Local run created', at: now }],
     canvas: structuredCloneSafe(initialCanvas),
   };
 }

@@ -53,7 +53,7 @@ export default function AgentWorkbenchPage({ showNotice, embedded = false }) {
   return <section className={`page-content agent-workbench-page ${embedded ? 'embedded-agent-workbench' : ''}`}>
     {!embedded && <div className="page-title-row"><div><h1>Agent workbench</h1><p className="page-subtitle">Live web search, composable skills, tools, and real automations</p></div><button className="secondary-dark-button" onClick={load}><RefreshCw size={14} /> Refresh runtime</button></div>}
     {embedded && <div className="embedded-workbench-actions"><span>Runtime controls</span><button className="secondary-dark-button" onClick={load}><RefreshCw size={14} /> Refresh</button></div>}
-    <div className="agent-runtime-banner"><span className="online-dot" /><div><b>Runtime connected</b><span>Server-side execution is enabled. Tools run in parallel when selected; skills load progressively from metadata to instructions.</span></div><span className="demo-badge">LIVE</span></div>
+    <div className={`agent-runtime-banner ${runtimeError ? 'offline' : ''}`}><span className="online-dot" /><div><b>{runtimeError ? 'Runtime unavailable' : 'Runtime connected'}</b><span>{runtimeError ? 'The live runtime could not be reached. You can keep using local task previews, or retry when the server is available.' : 'Server-side execution is enabled. Tools run in parallel when selected; skills load progressively from metadata to instructions.'}</span></div><span className="demo-badge">{runtimeError ? 'OFFLINE' : 'LIVE'}</span></div>
     {runtimeError && <div className="agent-error" role="alert">{runtimeError} <button onClick={load}>Retry</button></div>}
     <div className="agent-grid">
       <section className="agent-run-panel">

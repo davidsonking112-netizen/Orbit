@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   CalendarDays, Check, ChevronRight, Clock3, FileText, Mail, MoreHorizontal,
-  Plus, Trash2, X,
+  Plus, Sparkles, Trash2, X,
 } from 'lucide-react';
 import usePersistentState from '../hooks/usePersistentState.js';
 import AgentWorkbenchPage from './AgentWorkbenchPage.jsx';
@@ -38,7 +38,7 @@ function scheduleCadence(item) {
   return `Every ${item.day || 'Monday'}, ${formatTime(item.time)}`;
 }
 
-export default function TasksPage({ navigate, showNotice }) {
+export default function TasksPage({ navigate, showNotice, createNewTask }) {
   const [schedules, setSchedules] = usePersistentState('orbit:v1:schedules', initialSchedules);
   const [automations, setAutomations] = usePersistentState('orbit:v1:automations', initialAutomations);
   const [dialog, setDialog] = useState(null);
@@ -47,6 +47,7 @@ export default function TasksPage({ navigate, showNotice }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [scheduleForm, setScheduleForm] = useState({ name: '', frequency: 'weekly', time: '09:00', day: 'Monday', monthDay: '1' });
   const [automationForm, setAutomationForm] = useState({ trigger: 'When a file is added', action: '' });
+  const [taskPrompt, setTaskPrompt] = useState('');
 
   const openSchedule = (item = null) => {
     setEditingId(item?.id ?? null);
@@ -110,12 +111,24 @@ export default function TasksPage({ navigate, showNotice }) {
     showNotice(`${target.label || 'Item'} removed from this browser.`);
   };
 
+  const startTask = (event) => {
+    event.preventDefault();
+    createNewTask(taskPrompt.trim());
+  };
+
   return <div className="split-page task-page">
     <section className="page-content task-content">
       <div className="page-title-row">
-        <div><h1>Schedules &amp; automations</h1><p className="page-subtitle">Set up work Orbit can run for you</p></div>
-        <button className="primary-button" onClick={() => openSchedule()}><Plus size={16} /> Create schedule</button>
+        <div><span className="page-eyebrow">ORBIT WORKSPACE</span><h1>What are you working on?</h1><p className="page-subtitle">Turn a request into a clear plan, then review it before anything runs.</p></div>
+        <button className="primary-button" onClick={() => createNewTask()}><Plus size={16} /> New task</button>
       </div>
+      <section className="agent-home-hero" aria-labelledby="agent-home-title">
+        <div className="agent-home-icon"><Sparkles size={20} /></div>
+        <div className="agent-home-copy"><span className="agent-home-kicker">PERSONAL AI WORKSPACE <span>LOCAL PREVIEW</span></span><h2 id="agent-home-title">Start with an outcome, not a blank page.</h2><p>Describe what you need and Orbit will save the request, suggest an editable plan, and keep every step visible for review.</p></div>
+        <form className="task-starter" onSubmit={startTask}><textarea value={taskPrompt} onChange={(event) => setTaskPrompt(event.target.value)} rows={2} placeholder="Try: Compare three project tools for a small remote team…" aria-label="Describe a new task" /><div className="task-starter-footer"><span>Saved locally · no AI request is sent</span><button className="primary-button" type="submit"><Sparkles size={15} /> Start task</button></div></form>
+        <div className="starter-suggestions"><span>Try a template</span><button type="button" onClick={() => setTaskPrompt('Create a concise weekly team update from my notes')}>Weekly update</button><button type="button" onClick={() => setTaskPrompt('Compare the best tools for a small remote team')}>Compare options</button><button type="button" onClick={() => setTaskPrompt('Draft a launch checklist for my next project')}>Launch checklist</button></div>
+      </section>
+      <div className="section-heading-row workspace-section-heading"><div><h2>Schedules &amp; automations</h2><p>Reusable workflows that can be reviewed and tested separately.</p></div><span className="demo-badge">LOCAL</span></div>
       <div className="local-demo-note"><Clock3 size={14} /><span>These sample cards are browser-local previews. Use Live automations below for server-backed schedules and test runs.</span></div>
       <div className="schedule-grid">
         {schedules.map((item) => {

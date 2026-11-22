@@ -56,8 +56,8 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const createNewTask = () => {
-    const run = createLocalRun();
+  const createNewTask = (prompt = '') => {
+    const run = createLocalRun(typeof prompt === 'string' ? prompt : '');
     setRuns((current) => [run, ...(Array.isArray(current) ? current : [])]);
     navigate(`/task/${encodeURIComponent(run.id)}`);
   };
@@ -111,14 +111,16 @@ export default function App() {
       <div className="topbar-right"><button className="icon-btn help-button" title="Help" onClick={() => showNotice('Use the sidebar or Ctrl/Cmd+K to move around Orbit.')}><CircleHelp size={18} /></button><button className="shortcut" onClick={() => setPaletteOpen(true)} aria-label="Open command palette"><Command size={13} /> K</button><button className="avatar-button" aria-label="Account menu" onClick={() => navigate('/settings')}>JD</button><ChevronDown size={15} className="top-chevron" /></div>
     </header>
     <div className="workspace-layout">
-      <aside className="sidebar">
+      <aside className="sidebar" aria-label="Orbit workspace navigation">
         <button className="new-task-button" onClick={createNewTask}><Plus size={17} strokeWidth={2.2} /> New task</button>
+        <div className="sidebar-section-label">Workspace</div>
         <nav className="primary-nav" aria-label="Main navigation">
           {nav.map(({ id, label, icon: Icon, path: target }) => <button key={id} className={`nav-item ${page === id ? 'selected' : ''}`} aria-current={page === id ? 'page' : undefined} onClick={() => navigate(target)}><Icon size={17} strokeWidth={1.8} /><span>{label}</span></button>)}
         </nav>
+        <div className="sidebar-runtime"><span className="runtime-dot" /><span><b>Local workspace</b><small>Data stays in this browser</small></span></div>
       </aside>
       <main className={`main-stage ${page === 'tasks' || page === 'task-chat' ? 'with-inspector' : ''}`}>
-        {page === 'tasks' && <TasksPage navigate={navigate} showNotice={showNotice} />}
+        {page === 'tasks' && <TasksPage navigate={navigate} showNotice={showNotice} createNewTask={createNewTask} />}
         {page === 'library' && <LibraryPage showNotice={showNotice} />}
         {page === 'slides-images' && <SlidesImagesPage showNotice={showNotice} />}
         {page === 'integrations' && <IntegrationsPage showNotice={showNotice} />}
