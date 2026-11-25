@@ -3,7 +3,7 @@ let connectedAt = null;
 let mode = null;
 
 function assertKey(value) {
-  if (typeof value !== 'string' || !value.trim().startsWith('ck_')) throw new Error('Enter a valid Composio project API key.');
+  if (typeof value !== 'string' || !/^(ck_|ak_).+/.test(value.trim())) throw new Error('Enter a valid Composio consumer (ck_) or project (ak_) key.');
   return value.trim();
 }
 
@@ -56,3 +56,9 @@ export async function connectComposio(value) {
 }
 
 export function disconnectComposio() { apiKey = ''; connectedAt = null; mode = null; return getComposioStatus(); }
+
+if (process.env.COMPOSIO_API_KEY) {
+  apiKey = process.env.COMPOSIO_API_KEY.trim();
+  mode = apiKey.startsWith('ck_') ? 'connect-mcp' : apiKey.startsWith('ak_') ? 'project-rest' : null;
+  connectedAt = mode ? new Date().toISOString() : null;
+}

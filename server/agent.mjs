@@ -1,6 +1,8 @@
-import { executeTool, toolCatalog, webSearch } from './tools.mjs';
+import { executeTool, toolCatalog } from './tools.mjs';
 import { chooseSkills, loadSkills } from './skills.mjs';
 import { createRun } from './store.mjs';
+import { synthesizeRun } from './ai.mjs';
+import { persistRun } from './supabase.mjs';
 
 export async function runAgent({ prompt, skillIds = [], toolIds = [], source = 'manual' }) {
   const selectedSkillIds = skillIds.length ? skillIds : chooseSkills(prompt).map((skill) => skill.id);
@@ -14,7 +16,11 @@ export async function runAgent({ prompt, skillIds = [], toolIds = [], source = '
       return { toolId: id, status: 'completed', result: await executeTool(id, input) };
     } catch (error) { return { toolId: id, status: 'failed', error: error.message }; }
   }));
-  return createRun({ source, prompt, skillIds: selectedSkills.map((skill) => skill.id), skillInstructions: selectedSkills.map((skill) => ({ id: skill.id, content: skill.content })), toolIds: selectedToolIds, plan, results: toolResults, summary: summarize(toolResults) });
+  const fallbackSummary = summarize(toolResults);
+  const synthesis = await synthesizeRun({ prompt, results: toolResults, fallbackSummary });
+  const run = createRun({ source, prompt, skillIds: selectedSkills.map((skill) => skill.id), skillInstructions: selectedSkills.map((skill) => ({ id: skill.id, content: skill.content })), toolIds: selectedToolIds, plan, results: toolResults, summary: synthesis.summary, aiProvider: synthesis.provider });
+  run.persistence = await persistRun(run);
+  return run;
 }
 
 function summarize(results) {

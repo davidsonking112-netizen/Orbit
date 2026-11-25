@@ -28,3 +28,13 @@ The existing local prototype flows remain local-only, but the Tasks tab now prov
 Integrations includes a Google AI Studio API-key input with a backend connection test. The key is sent to the Orbit runtime, tested against Gemini, and held only in process memory; it is not written to browser storage or committed to the repository. Restarting the runtime or choosing Disconnect clears it. For production, use an environment variable or a secret manager instead of a user-entered key.
 
 Orbit also accepts Composio Connect consumer keys (`ck_...`) through Composio's MCP handshake at `connect.composio.dev/mcp`; project REST keys (`ak_...`) use the toolkit API. Both credentials remain runtime-memory only.
+
+## Runtime providers
+
+The Integrations page connects the three runtime layers without requiring credentials at build time:
+
+- **Google AI Studio:** Gemini 2.5 Flash can synthesize completed tool evidence into a concise workflow summary. Without a key, Orbit uses a deterministic local summary.
+- **Composio:** consumer keys (`ck_...`) enable MCP tool discovery and calls; project keys (`ak_...`) connect in REST mode. The key is kept in server memory only.
+- **Supabase:** the server can health-check a project and persist completed runs to `orbit_runs` through Supabase REST. Run `supabase/schema.sql` in the Supabase SQL editor first; use a service-role key only on the server and never in browser code.
+
+All three providers can be configured through the Integrations UI or with runtime environment variables documented in `.env.example`. No provider is contacted when those values are absent. The agent workflow remains usable with local fallback behavior, and each run records which AI and persistence path was used.

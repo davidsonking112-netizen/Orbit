@@ -5,6 +5,8 @@ import { toolCatalog } from './tools.mjs';
 import { createSchedule, deleteSchedule, listRuns, listSchedules, runSchedule, startScheduler, updateSchedule } from './scheduler.mjs';
 import { connectGoogleAiStudio, disconnectGoogleAiStudio, getGoogleAiStudioStatus, testGoogleAiStudio } from './google-ai-studio.mjs';
 import { callComposioTool, connectComposio, disconnectComposio, getComposioStatus, listComposioTools } from './composio.mjs';
+import { getAiStatus } from './ai.mjs';
+import { connectSupabase, disconnectSupabase, getSupabaseStatus, testSupabase } from './supabase.mjs';
 
 const port = Number(process.env.PORT || 8787);
 const json = (response, status, value) => { response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*', 'cache-control': 'no-store' }); response.end(JSON.stringify(value)); };
@@ -15,7 +17,7 @@ const server = createServer(async (request, response) => {
   if (request.method === 'OPTIONS') return json(response, 204, {});
   try {
     if (request.method === 'GET' && url.pathname === '/api/health') return json(response, 200, { ok: true, service: 'orbit-agent-runtime', scheduler: 'active' });
-    if (request.method === 'GET' && url.pathname === '/api/capabilities') return json(response, 200, { skills: loadSkills(), tools: toolCatalog, scheduling: { enabled: true, minimumIntervalSeconds: 60, persistence: 'server file store' } });
+    if (request.method === 'GET' && url.pathname === '/api/capabilities') return json(response, 200, { skills: loadSkills(), tools: toolCatalog, providers: { ai: getAiStatus(), composio: getComposioStatus(), supabase: getSupabaseStatus() }, scheduling: { enabled: true, minimumIntervalSeconds: 60, persistence: 'server file store' } });
     if (request.method === 'GET' && url.pathname === '/api/skills') return json(response, 200, { skills: loadSkills({ includeInstructions: url.searchParams.get('instructions') === 'true' }) });
     if (request.method === 'GET' && url.pathname === '/api/tools') return json(response, 200, { tools: toolCatalog });
     if (request.method === 'GET' && url.pathname === '/api/schedules') return json(response, 200, { schedules: listSchedules(), runs: listRuns() });
@@ -28,6 +30,11 @@ const server = createServer(async (request, response) => {
     if (request.method === 'GET' && url.pathname === '/api/providers/composio/tools') return json(response, 200, { tools: await listComposioTools() });
     if (request.method === 'POST' && url.pathname === '/api/providers/composio/call') { const input = await body(request); return json(response, 200, { result: await callComposioTool(input.name, input.arguments || {}) }); }
     if (request.method === 'DELETE' && url.pathname === '/api/providers/composio') return json(response, 200, disconnectComposio());
+    if (request.method === 'GET' && url.pathname === '/api/providers/ai') return json(response, 200, getAiStatus());
+    if (request.method === 'GET' && url.pathname === '/api/providers/supabase') return json(response, 200, getSupabaseStatus());
+    if (request.method === 'POST' && url.pathname === '/api/providers/supabase/connect') return json(response, 200, await connectSupabase(await body(request)));
+    if (request.method === 'POST' && url.pathname === '/api/providers/supabase/test') return json(response, 200, await testSupabase());
+    if (request.method === 'DELETE' && url.pathname === '/api/providers/supabase') return json(response, 200, disconnectSupabase());
     if (request.method === 'POST' && url.pathname === '/api/agent/run') return json(response, 200, { run: await runAgent(await body(request)) });
     if (request.method === 'POST' && url.pathname === '/api/schedules') return json(response, 201, { schedule: createSchedule(await body(request)) });
     const scheduleMatch = url.pathname.match(/^\/api\/schedules\/([^/]+)(?:\/run)?$/);

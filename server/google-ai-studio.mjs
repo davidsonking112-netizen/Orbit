@@ -7,6 +7,10 @@ function assertKey(value) {
   return value.trim();
 }
 
+export async function generateWithGoogleAiStudio(prompt) {
+  if (!apiKey) throw new Error('Connect a Google AI Studio API key first.');
+  return generateWithKey(apiKey, prompt);
+}
 async function generateWithKey(key, prompt) {
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
     method: 'POST',
@@ -44,4 +48,9 @@ export function disconnectGoogleAiStudio() {
 export async function testGoogleAiStudio(prompt = 'Reply with exactly: Orbit Gemini connection test passed.') {
   if (!apiKey) throw new Error('Connect a Google AI Studio API key first.');
   return { model, text: await generateWithKey(apiKey, prompt) };
+}
+
+if (process.env.GOOGLE_AI_STUDIO_API_KEY) {
+  apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY.trim();
+  connectedAt = new Date().toISOString();
 }
